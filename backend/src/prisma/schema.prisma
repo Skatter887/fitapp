@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model WorkoutPlan {
+  id            String           @id @default(cuid())
+  createdAt     DateTime         @default(now())
+  daysPerWeek   Int
+  targetMuscles String   // JSON-encoded array for SQLite
+  sessions      WorkoutSession[]
+}
+
+model WorkoutSession {
+  id          String          @id @default(cuid())
+  planId      String
+  plan        WorkoutPlan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  dayLabel    String
+  dayIndex    Int
+  completed   Boolean         @default(false)
+  completedAt DateTime?
+  exercises   ExerciseEntry[]
+}
+
+model ExerciseEntry {
+  id          String         @id @default(cuid())
+  sessionId   String
+  session     WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  wgerId      Int
+  name        String
+  muscleGroup String
+  sets        Int
+  reps        String
+  imageUrl    String?
+  description String?
+  completed   Boolean        @default(false)
+  order       Int            @default(0)
+}

@@ -1,0 +1,21 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: fit_postgres
+    environment:
+      POSTGRES_USER: fit_user
+      POSTGRES_PASSWORD: fit_password
+      POSTGRES_DB: fit_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U fit_user -d fit_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
